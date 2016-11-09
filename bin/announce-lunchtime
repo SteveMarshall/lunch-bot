@@ -1,0 +1,26 @@
+#!/usr/bin/env ruby
+# encoding: utf-8
+require 'optparse'
+require 'hipchat'
+
+options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: announce-lunchtime [options]"
+
+  opts.on("-rROOM", "--room=ROOM", "HipChat room") do |r|
+    options[:room] = r
+  end
+end.parse!
+
+[:room].each do |arg|
+  raise OptionParser::MissingArgument.new(arg) unless options.include?(arg)
+end
+
+hipchat = HipChat::Client.new(ENV['HC_TOKEN'], :api_version => 'v2')
+
+hipchat[options[:room]].send(
+  '',
+  'Lunch, anyone?',
+  :color => 'gray',
+  :notify => true
+)
